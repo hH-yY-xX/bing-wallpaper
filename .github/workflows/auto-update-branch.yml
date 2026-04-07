@@ -1,0 +1,33 @@
+name: Auto Rebase Branch
+
+on:
+  schedule:
+    - cron: "0 2 * * *"
+  workflow_dispatch:
+
+jobs:
+  rebase:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout target branch
+        uses: actions/checkout@v3
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set Git config
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+      - name: Fetch latest main
+        run: git fetch origin main
+
+      - name: Rebase onto main
+        run: |
+          git rebase origin/main
+
+      - name: Push changes
+        run: |
+          git push origin HEAD --force-with-lease
